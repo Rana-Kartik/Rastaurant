@@ -23,16 +23,18 @@ module.exports.routes = {
   'get /category/add' : {view : 'categoryAdd'},
   'get /item/adds' : {view : 'itemAdd'},
   'get /category/sh' : {view : 'listcategory'},
+  'get /index' : {view : 'index'},
   'get /item/sh' : {view : 'listitem'},
   'post /category/add' : 'TestController.add',
   'post /item/add' : 'TestController.itemadd',
   'get /category/show' : 'TestController.categoryshow',
   'get /item/show' : 'TestController.itemshow',
+  'get /item/shows' : 'TestController.itemshows',
   'post /login' : 'TestController.login',
   'post /login/add' : 'TestController.loginadd',
   'post /category/delete/:id' : 'TestController.delete',
   'get /category/update/:id' : 'TestController.edit',
-  'post /category/update/:id' : 'TestController.update',
+  'post /item/update/:id' : 'TestController.update',
   'post /category/search' : 'TestController.search'
 
 

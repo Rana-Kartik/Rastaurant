@@ -2,6 +2,12 @@
 <h1 class="display">Add Category</h1>
 <form method="post" action="/item/add">
     <div>
+        <select>
+            <option>desserts</option>
+            <option>starters</option>
+        </select>
+    </div>
+    <div>
         <label>itemName</label>
         <input type="text" name="itemName">
     </div>
@@ -17,9 +23,9 @@
         <label>displayOrder</label>
         <input type="number" name="displayOrder">
     </div>
-    <!-- <div>
+    <div>
         <label>Image</label>
         <input type="file" name="image">
-    </div> -->
+    </div>
     <input type="submit" value="Submit">
 </form>

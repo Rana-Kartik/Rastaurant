@@ -7,6 +7,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
+
 module.exports = {
       add : function(req,res){
         Test.create({CategoryName: req.body.CategoryName}).exec(function (err, data){
@@ -28,11 +29,11 @@ module.exports = {
       },
 
       delete: function (req, res) {
-        Test.destroy({ id: req.params.id }).exec(function (err) {
+        item.destroy({ id: req.params.id }).exec(function (err) {
             if (err) {
                 res.send(500, { error: 'Database Error' })
             }
-            res.redirect('/category/show')
+            res.redirect('/item/shows')
         })
     },
 
@@ -43,7 +44,6 @@ module.exports = {
             description: req.body.description, 
             price: req.body.price , 
             displayOrder : req.body.displayOrder,
-            image : req.body.image,
             items: req.body.items
         }).fetch().then(function (result){
            // console.log(req.body.items);
@@ -55,7 +55,16 @@ module.exports = {
                 return res.send(500,{error: 'error'})
         })
       },
-
+      itemshows : async function(req,res){
+        await item.find({})
+        .then(data => {
+           // console.log(data.pop().categoryID);
+           res.view('listitem', { data: data })
+        })
+        .catch(err => {
+           console.log(err);
+        })
+     },
       itemshow : async function(req,res){
         await Test.find({}).populate('categoryID')
          .then(data => {
@@ -85,46 +94,47 @@ module.exports = {
       },
 
       edit: function (req, res) {
-        Test.findOne({ id: req.params.id }).exec(function (err, test) {
+        item.findOne({ id: req.params.id }).exec(function (err, test) {
             if (err) {
                 res.send(500, { error: 'Database Error' })
             }
-            res.view('editCategory', { test: test })
+            res.view('itemedit', { test: test })
         })
     },
 
     update: function (req, res) {
-        let CategoryName = req.body.CategoryName
-        Test.update({ id: req.params.id }, { CategoryName: CategoryName }).exec(function (err) {
+        item.update({ id: req.params.id }, { 
+            itemName : req.body.itemName, 
+            description: req.body.description, 
+            price: req.body.price , 
+            displayOrder : req.body.displayOrder,
+         }).exec(function (err) {
             if (err) {
                 res.send(500, { error: 'Database Error' })
             }
-            res.redirect('/category/show')
+            res.redirect('/item/shows')
         })
     },
     search : async function(req,res){
-           await Test.find({CategoryName : req.body.CategoryName})
-           .then(result => {
-               console.log(result);
-               res.send(200 , { message : 'getting the result'})
-           })
-           .catch(err => {
-              res.send(500, {error : "Not found in the database"})
-           })
+        let result = await Test.findOne({CategoryName : req.body.CategoryName})
+        if(!result){
+            res.send(500, {error : "not found"})
+        }
+        else
+        {
+            res.redirect('/category/show')
+        }
     },
       login :async function(req,res){
-         await user.find({}).then(data => {
-             let username = req.body.username
-             let password = req.body.password
-             if(data.username === username && data.password === password)
-             {
-                return res.send(200, {message : 'Authentication is success'})
-             }
-             else
-             {
-                return res.send(500 , {message: 'invalid username and password'})
-             }
-          })
+         let result = await user.findOne({username : req.body.username, password : req.body.password})
+         if(!result)
+         {
+            res.send(500, {error : "invalid username and password"})
+         }
+         else
+         {
+            res.redirect('/index')
+         }
       }
 };
 
