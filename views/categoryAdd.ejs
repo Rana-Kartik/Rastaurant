@@ -1,9 +1,9 @@
-
 <h1 class="display">Add Category</h1>
+<!-- Create the category form for adding the category-->
 <form method="post" action="/category/add">
     <div>
         <label>CategoryName</label>
-        <input type="text" name="CategoryName">
+        <input type="text" name="CategoryName" pattern="[A-Za-z]+" required>
     </div>
     <input type="submit" value="Submit">
 </form>

@@ -7,15 +7,17 @@
 
 const mongoose = require('mongoose')
 module.exports = {
+
+  //create the category table and perform the one to many relationship
   tableName: 'category',
   attributes: {
-     CategoryName : {
-      type : 'string'
-     },
-     categoryID : {
-       collection : 'item',
-       via : 'items',
-     }
+    CategoryName: {
+      type: 'string'
+    },
+    categoryID: {
+      collection: 'item',
+      via: 'items',
+    }
     //  ╔═╗╦═╗╦╔╦╗╦╔╦╗╦╦  ╦╔═╗╔═╗
     //  ╠═╝╠╦╝║║║║║ ║ ║╚╗╔╝║╣ ╚═╗
     //  ╩  ╩╚═╩╩ ╩╩ ╩ ╩ ╚╝ ╚═╝╚═╝
