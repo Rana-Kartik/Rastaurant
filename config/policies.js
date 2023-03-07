@@ -18,5 +18,9 @@ module.exports.policies = {
   ***************************************************************************/
 
   // '*': true,
-  '/login' : 'login'
+  //'user/login' : 'loginjwt'
+  TestController : {
+    '*' : 'loginjwt',
+    '/login' : true,
+  }
 };

@@ -7,7 +7,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
 module.exports = {
     //adding category in the database
@@ -100,8 +100,8 @@ module.exports = {
     //add the login credentials in the database
     loginadd: function (req, res) {
         user.find({ username: req.body.username })
-            .then(user => {
-                if (user.length >= 1) {
+            .then(userdata => {
+                if (userdata.length >= 1) {
                     return res.status(200).json({
                         message: 'username exist'
                     })
@@ -117,7 +117,8 @@ module.exports = {
                             user.create({
                                 username: req.body.username,
                                 password: hash
-                            }).then(function (result) {
+                            })
+                            .then(result => {
                                 console.log(result)
                                 return res.send(200, { message: 'created' })
                             })
@@ -169,23 +170,32 @@ module.exports = {
 
     //get the login credentials and varify from the database
     login: async function (req, res) {
-        await user.find({ username: req.body.username })
-            .then(user => {
+        console.log(req.body);
+        await user.findOne({ username: req.body.username })
+            .then(async user => {
+                console.log("uuu",user);
                 if (user.length < 1) {
+                    console.log("len<1");
                     return res.status(200).json({
                         message: 'Auth Failed'
                     })
-                }
-                bcrypt.compare(req.body.password, user[0].password, (err, result) => {
+            
+                } 
+                console.log("==============================");
+                const pass= req.body.password;
+                console.log("ghhuhj",req.body.password, user.password);
+                await bcrypt.compare(pass, user.password, (err, result) => {
                     if (err) {
+                        console.log("errr");
                         return res.status(500).json({
                             message: 'Auth Failed'
                         })
                     }
+                    console.log("res", result);
                     if (result) {
                         const token = jwt.sign({
-                            username: user[0].username,
-                            userid: user[0]._id
+                            username: user.username,
+                            userid: user._id
                         }, process.env.JWT_KEY,
                             {
                                 expiresIn: "80h"
@@ -197,6 +207,7 @@ module.exports = {
                         })
                     }
                     else {
+                        console.log("else");
                         return res.status(500).json({
                             message: 'Auth Failed'
                         })
