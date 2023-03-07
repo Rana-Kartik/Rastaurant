@@ -17,7 +17,7 @@ module.exports = {
                 res.send(500, { error: 'error' })
             }
             res.send(200).json({
-                message : 'created'
+                message: 'created'
             })
         })
     },
@@ -30,7 +30,7 @@ module.exports = {
                     res.send(500, { error: 'Database Error' })
                 }
                 res.send(200).json({
-                    message : 'success'
+                    message: 'success'
                 })
             })
     },
@@ -42,7 +42,7 @@ module.exports = {
                 res.send(500, { error: 'Database Error' })
             }
             res.send(200).json({
-                message : 'deleted'
+                message: 'deleted'
             })
         })
     },
@@ -73,9 +73,9 @@ module.exports = {
             .then(data => {
                 // console.log(data.pop().categoryID);
                 res.send(200).json({
-                    message : 'item shows'
+                    message: 'item shows'
                 })
-               console.log(data);
+                console.log(data);
             })
             .catch(err => {
                 console.log(err);
@@ -96,38 +96,37 @@ module.exports = {
                 console.log(err);
             })
     },
-   
+
     //add the login credentials in the database
     loginadd: function (req, res) {
-        user.find({username : req.body.username})
-        .then(user => {
-            if(user.length>=1){
-                return res.status(200).json({
-                    message : 'username exist'
-                })
-            }
-            else
-            {
-                bcrypt.hash(req.body.password,10, (err,hash) => {
-                    if(err){
-                        return res.status(500).json({
-                            error : err
-                        })
-                    }
-                    else{
-                        user.create({
-                            username: req.body.username,
-                            password: hash
-                        }).then(function (result) {
-                            console.log(result)
-                            return res.send(200, { message: 'created' })
-                        })
-                    }
-                })
-            }
-        })
+        user.find({ username: req.body.username })
+            .then(user => {
+                if (user.length >= 1) {
+                    return res.status(200).json({
+                        message: 'username exist'
+                    })
+                }
+                else {
+                    bcrypt.hash(req.body.password, 10, (err, hash) => {
+                        if (err) {
+                            return res.status(500).json({
+                                error: err
+                            })
+                        }
+                        else {
+                            user.create({
+                                username: req.body.username,
+                                password: hash
+                            }).then(function (result) {
+                                console.log(result)
+                                return res.send(200, { message: 'created' })
+                            })
+                        }
+                    })
+                }
+            })
     },
- 
+
     //edit the item 
     edit: function (req, res) {
         item.findOne({ id: req.params.id }).exec(function (err, test) {
@@ -150,7 +149,7 @@ module.exports = {
                 res.send(500, { error: 'Database Error' })
             }
             res.status(200).json({
-                message : 'updated'
+                message: 'updated'
             })
         })
     },
@@ -163,53 +162,52 @@ module.exports = {
         }
         else {
             res.status(200).json({
-                message : 'searching'
+                message: 'searching'
             })
         }
     },
 
     //get the login credentials and varify from the database
-    login: async function(req, res)  {
-      await user.find({username : req.body.username})
-       .then(user => {
-            if(user.length < 1){
-                return res.status(200).json({
-                    message : 'Auth Failed'
-                })
-            }
-            bcrypt.compare(req.body.password, user[0].password,(err, result) => {
-                if(err){
-                    return res.status(500).json({
-                        message : 'Auth Failed'
-                    })
-                }
-                if(result){
-                   const token =  jwt.sign({
-                        username : user[0].username,
-                        userid : user[0]._id
-                    }, process.env.JWT_KEY,
-                    {
-                        expiresIn : "80h"
-                    },
-                    )
+    login: async function (req, res) {
+        await user.find({ username: req.body.username })
+            .then(user => {
+                if (user.length < 1) {
                     return res.status(200).json({
-                         message : 'Auth Success',
-                         token : token
+                        message: 'Auth Failed'
                     })
                 }
-                else
-                {
-                    return res.status(500).json({
-                        message : 'Auth Failed'
-                    })
-                } 
+                bcrypt.compare(req.body.password, user[0].password, (err, result) => {
+                    if (err) {
+                        return res.status(500).json({
+                            message: 'Auth Failed'
+                        })
+                    }
+                    if (result) {
+                        const token = jwt.sign({
+                            username: user[0].username,
+                            userid: user[0]._id
+                        }, process.env.JWT_KEY,
+                            {
+                                expiresIn: "80h"
+                            },
+                        )
+                        return res.status(200).json({
+                            message: 'Auth Success',
+                            token: token
+                        })
+                    }
+                    else {
+                        return res.status(500).json({
+                            message: 'Auth Failed'
+                        })
+                    }
+                })
             })
-       })
-       .catch(err => {
-            return res.status(200).json({
-                error : err
+            .catch(err => {
+                return res.status(200).json({
+                    error: err
+                })
             })
-       })
     }
 };
 
