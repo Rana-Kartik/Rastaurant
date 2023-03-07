@@ -20,11 +20,6 @@ module.exports.routes = {
   ***************************************************************************/
 
   '/': { view: 'pages/homepage' },
-  'get /category/add' : {view : 'categoryAdd'},
-  'get /item/adds' : {view : 'itemAdd'},
-  'get /category/sh' : {view : 'listcategory'},
-  'get /index' : {view : 'index'},
-  'get /item/sh' : {view : 'listitem'},
   'post /category/add' : 'TestController.add',
   'post /item/add' : 'TestController.itemadd',
   'get /category/show' : 'TestController.categoryshow',

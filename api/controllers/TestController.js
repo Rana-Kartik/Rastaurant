@@ -7,7 +7,8 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 module.exports = {
     //adding category in the database
     add: function (req, res) {
@@ -15,7 +16,9 @@ module.exports = {
             if (err) {
                 res.send(500, { error: 'error' })
             }
-            res.redirect('/category/show')
+            res.send(200).json({
+                message : 'created'
+            })
         })
     },
 
@@ -26,7 +29,9 @@ module.exports = {
                 if (err) {
                     res.send(500, { error: 'Database Error' })
                 }
-                res.view('listcategory', { data: data })
+                res.send(200).json({
+                    message : 'success'
+                })
             })
     },
 
@@ -36,7 +41,9 @@ module.exports = {
             if (err) {
                 res.send(500, { error: 'Database Error' })
             }
-            res.redirect('/item/shows')
+            res.send(200).json({
+                message : 'deleted'
+            })
         })
     },
 
@@ -65,7 +72,10 @@ module.exports = {
         await item.find({})
             .then(data => {
                 // console.log(data.pop().categoryID);
-                res.view('listitem', { data: data })
+                res.send(200).json({
+                    message : 'item shows'
+                })
+               console.log(data);
             })
             .catch(err => {
                 console.log(err);
@@ -77,28 +87,44 @@ module.exports = {
         await Test.find({}).populate('categoryID')
             .then(data => {
                 // console.log(data.pop().categoryID);
-                res.view('listitem', { data: data })
                 const sta = data.pop();
                 const dst = data;
                 console.log("Dessert Item is +++ > ", "Total Item is", sta);
                 console.log("Starters item is +++ > ", dst.pop().categoryID);
-
             })
             .catch(err => {
                 console.log(err);
             })
     },
-
+   
     //add the login credentials in the database
     loginadd: function (req, res) {
-        let username = req.body.username
-        let password = req.body.password
-        user.create({
-            username: username,
-            password: password
-        }).then(function (result) {
-            console.log(result)
-            return res.send(200, { message: 'created' })
+        user.find({username : req.body.username})
+        .then(user => {
+            if(user.length>=1){
+                return res.status(200).json({
+                    message : 'username exist'
+                })
+            }
+            else
+            {
+                bcrypt.hash(req.body.password,10, (err,hash) => {
+                    if(err){
+                        return res.status(500).json({
+                            error : err
+                        })
+                    }
+                    else{
+                        user.create({
+                            username: req.body.username,
+                            password: hash
+                        }).then(function (result) {
+                            console.log(result)
+                            return res.send(200, { message: 'created' })
+                        })
+                    }
+                })
+            }
         })
     },
  
@@ -108,7 +134,7 @@ module.exports = {
             if (err) {
                 res.send(500, { error: 'Database Error' })
             }
-            res.view('itemedit', { test: test })
+            res.send(200)
         })
     },
 
@@ -123,7 +149,9 @@ module.exports = {
             if (err) {
                 res.send(500, { error: 'Database Error' })
             }
-            res.redirect('/item/shows')
+            res.status(200).json({
+                message : 'updated'
+            })
         })
     },
 
@@ -134,19 +162,54 @@ module.exports = {
             res.send(500, { error: "not found" })
         }
         else {
-            res.redirect('/category/show')
+            res.status(200).json({
+                message : 'searching'
+            })
         }
     },
 
     //get the login credentials and varify from the database
-    login: async function (req, res) {
-        let result = await user.findOne({ username: req.body.username, password: req.body.password })
-        if (!result) {
-            res.send(500, { error: "invalid username and password" })
-        }
-        else {
-            res.redirect('/index')
-        }
+    login: async function(req, res)  {
+      await user.find({username : req.body.username})
+       .then(user => {
+            if(user.length < 1){
+                return res.status(200).json({
+                    message : 'Auth Failed'
+                })
+            }
+            bcrypt.compare(req.body.password, user[0].password,(err, result) => {
+                if(err){
+                    return res.status(500).json({
+                        message : 'Auth Failed'
+                    })
+                }
+                if(result){
+                   const token =  jwt.sign({
+                        username : user[0].username,
+                        userid : user[0]._id
+                    }, process.env.JWT_KEY,
+                    {
+                        expiresIn : "80h"
+                    },
+                    )
+                    return res.status(200).json({
+                         message : 'Auth Success',
+                         token : token
+                    })
+                }
+                else
+                {
+                    return res.status(500).json({
+                        message : 'Auth Failed'
+                    })
+                } 
+            })
+       })
+       .catch(err => {
+            return res.status(200).json({
+                error : err
+            })
+       })
     }
 };
 
