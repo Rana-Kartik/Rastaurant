@@ -9,7 +9,7 @@ const mongoose = require('mongoose')
 module.exports = {
    
    //create the user table in the database
-   tableName: 'user',
+   tableName: 'login',
    attributes: {
       username: {
          type: 'string',

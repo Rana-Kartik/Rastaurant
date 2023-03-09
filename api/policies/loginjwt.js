@@ -5,7 +5,9 @@ module.exports = (req,res,next) => {
     try{
         const token = req.cookies.token
         if(!token){
-            return res.redirect('/login')
+            return res.status(500).json({
+                message : 'not varify the token'
+            })
         }
         else
         {
@@ -14,6 +16,8 @@ module.exports = (req,res,next) => {
         }
     }
     catch(error){
-        return res.redirect('/login')
+        return res.status(500).json({
+            message : 'error'
+        })
     }
 }

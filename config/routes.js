@@ -26,6 +26,7 @@ module.exports.routes = {
   'get /item/show' : 'TestController.itemshow',
   'get /item/shows' : 'TestController.itemshows',
   'post /login' : 'TestController.login',
+  'post /loginadd' : 'TestController.login',
   'get /logout' : 'TestController.logout',
   'post /login/add' : 'TestController.loginadd',
   'post /category/delete/:id' : 'TestController.delete',

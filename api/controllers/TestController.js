@@ -201,12 +201,13 @@ module.exports = {
                                 expiresIn: "80h"
                             },
                         )
+                        console.log(token,"===================");
+
                         res.cookie('token',token,{httpOnly:true})
                         return res.status(200).json({
                             message: 'Auth Success',
                             token: token,
                         })
-                        
                     }
                     else {
                         console.log("else");
@@ -225,6 +226,9 @@ module.exports = {
     logout :async function(req,res){
         try{
             res.clearCookie('token')
+            res.status(200).json({
+                message : "cookie clear"
+            })
         }
         catch(error){
             res.status(500).json({

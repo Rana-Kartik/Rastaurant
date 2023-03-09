@@ -20,7 +20,7 @@ module.exports.policies = {
   // '*': true,
   //'user/login' : 'loginjwt'
   TestController : {
-    '*' : 'loginjwt',
+    //'*' : 'loginjwt',
     '/login' : true,
   }
 };
