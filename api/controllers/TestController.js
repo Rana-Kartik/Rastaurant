@@ -99,16 +99,18 @@ module.exports = {
 
     // item shows in the views
     itemshows: async function (req, res) {
-        await item.find({limit : 3})
-            .then(data => {
-                res.status(200).json({
-                    statusCode : 200,
-                    data : data,
-                 })
-            })
-            .catch(err => {
-                console.log(err);
-            })
+        let skip = req.query.skip
+        console.log(skip);
+        let limit = req.query.limit
+        console.log(limit);
+
+        if(skip && limit){
+            let result =  await item.find({}).limit(limit).skip(skip*limit)
+            res.status(200).json({
+                statusCode : 200,
+                data : result,
+             })
+        }
     },
 
     //item shows in the views based on the category 
@@ -179,9 +181,6 @@ module.exports = {
                  })
         })
     },
-
-    
-
     //after edit the item also update in the database
     itemupdate: function (req, res) {
         item.update({ id: req.params.id }, {
@@ -206,17 +205,16 @@ module.exports = {
         })
     },
 
+
     //searching operation perform in the category side
     search: async function (req, res) {
-        let result = await Test.find({ CategoryName: req.body.CategoryName })
-        if (!result) {
-            res.send(500, { error: "not found" })
-        }
-        else {
+         await item.find({ itemName: req.body.itemName })
+         .then(result => {
             res.status(200).json({
-                message: 'searching'
+                statusCode : 200,
+                data : result
             })
-        }
+         })
     },
 
     //get the login credentials and varify from the database
@@ -256,7 +254,7 @@ module.exports = {
                         )
                         console.log(token,"===================");
 
-                        res.cookie('token',token,{httpOnly:true})
+                        res.cookie('token',token,{httpOnly:true}).send()
                         return res.status(200).json({
                             statusCode : 200,
                             message: 'Auth Success',

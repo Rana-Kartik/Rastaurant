@@ -33,7 +33,7 @@ module.exports.routes = {
   'post /category/update/:id' : 'TestController.categoryupdate',
   'post /item/update/:id' : 'TestController.itemupdate',
   'post /item/delete/:id' : 'TestController.itemdelete',
-  'post /category/search' : 'TestController.search'
+  'post /item/search' : 'TestController.search'
 
 
   /***************************************************************************
