@@ -29,9 +29,10 @@ module.exports.routes = {
   'post /loginadd' : 'TestController.login',
   'get /logout' : 'TestController.logout',
   'post /login/add' : 'TestController.loginadd',
-  'post /category/delete/:id' : 'TestController.delete',
-  'get /category/update/:id' : 'TestController.edit',
-  'post /item/update/:id' : 'TestController.update',
+  'post /category/delete/:id' : 'TestController.categorydelete',
+  'post /category/update/:id' : 'TestController.categoryupdate',
+  'post /item/update/:id' : 'TestController.itemupdate',
+  'post /item/delete/:id' : 'TestController.itemdelete',
   'post /category/search' : 'TestController.search'
 
 

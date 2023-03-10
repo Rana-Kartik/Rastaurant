@@ -12,38 +12,64 @@ const jwt = require('jsonwebtoken');
 module.exports = {
     //adding category in the database
     add: function (req, res) {
-        Test.create({ CategoryName: req.body.CategoryName }).exec(function (err, data) {
-            if (err) {
-                res.send(500, { error: 'error' })
-            }
-            res.send(200).json({
-                message: 'created'
+        Test.create({ CategoryName: req.body.CategoryName })
+        .fetch()
+        .then(data => {
+            res.status(200).json({
+               statusCode : 200,
+               data : data,
+               message: 'created'
             })
+        })
+        .catch(err => {
+            res.status(500).json({
+                statusCode : 500,
+                error : err,
+                message : 'error in creating the item'
+             })
         })
     },
 
     //category show in the views
     categoryshow: function (req, res) {
         Test.find({})
-            .exec(function (err, data) {
-                if (err) {
-                    res.send(500, { error: 'Database Error' })
-                }
-                res.send(200).json({
-                    message: 'success'
-                })
+            .then(data => {
+                res.status(200).json({
+                    statusCode : 200,
+                    data : data,
+                 })
+            })
+            .catch(err => {
+                res.status(500).json({
+                    statusCode : 500,
+                    error : err,
+                    message : 'error in creating the item'
+                 })
             })
     },
 
     //delete the category from the database
-    delete: function (req, res) {
+    categorydelete: function (req, res) {
+        Test.destroy({ id: req.params.id }).exec(function (err) {
+            if (err) {
+                res.send(500, { error: 'Database Error' })
+            }
+            res.status(200).json({
+                statusCode : 200,
+                message : 'deleted'
+             })
+        })
+    },
+
+    itemdelete: function (req, res) {
         item.destroy({ id: req.params.id }).exec(function (err) {
             if (err) {
                 res.send(500, { error: 'Database Error' })
             }
-            res.send(200).json({
-                message: 'deleted'
-            })
+            res.status(200).json({
+                statusCode : 200,
+                message : 'deleted'
+             })
         })
     },
 
@@ -56,26 +82,29 @@ module.exports = {
             price: req.body.price,
             displayOrder: req.body.displayOrder,
             items: req.body.items
-        }).fetch().then(function (result) {
-            // console.log(req.body.items);
-            console.log(result);
-            console.log('created')
-            return res.send(200, { message: 'created' })
+        }).fetch().then(result => {
+            res.status(200).json({
+                statusCode : 200,
+                data : result,
+                message : 'item created'
+             })
         }).catch(err => {
-            console.log(err);
-            return res.send(500, { error: 'error' })
+            res.status(500).json({
+                statusCode : 500,
+                error : err,
+                message : 'error in creating the item'
+             })
         })
     },
 
     // item shows in the views
     itemshows: async function (req, res) {
-        await item.find({})
+        await item.find({limit : 3})
             .then(data => {
-                // console.log(data.pop().categoryID);
-                res.send(200).json({
-                    message: 'item shows'
-                })
-                console.log(data);
+                res.status(200).json({
+                    statusCode : 200,
+                    data : data,
+                 })
             })
             .catch(err => {
                 console.log(err);
@@ -84,13 +113,17 @@ module.exports = {
 
     //item shows in the views based on the category 
     itemshow: async function (req, res) {
-        await Test.find({}).populate('categoryID')
+        await Test.find({}).populate('items')
             .then(data => {
+                res.status(200).json({
+                    statusCode : 200,
+                    data : data,
+                })
                 // console.log(data.pop().categoryID);
-                const sta = data.pop();
-                const dst = data;
-                console.log("Dessert Item is +++ > ", "Total Item is", sta);
-                console.log("Starters item is +++ > ", dst.pop().categoryID);
+                // const sta = data.pop();
+                // const dst = data;
+                // console.log("Dessert Item is +++ > ", "Total Item is", sta);
+                // console.log("Starters item is +++ > ", dst.pop().categoryID);
             })
             .catch(err => {
                 console.log(err);
@@ -118,9 +151,13 @@ module.exports = {
                                 username: req.body.username,
                                 password: hash
                             })
+                            .fetch()
                             .then(result => {
-                                console.log(result)
-                                return res.send(200, { message: 'created' })
+                                res.status(200).json({
+                                    statusCode : 200,
+                                    data : result,
+                                    message : 'User Created'
+                                })
                             })
                         }
                     })
@@ -129,35 +166,49 @@ module.exports = {
     },
 
     //edit the item 
-    edit: function (req, res) {
-        item.findOne({ id: req.params.id }).exec(function (err, test) {
-            if (err) {
-                res.send(500, { error: 'Database Error' })
-            }
-            res.send(200)
+    categoryupdate: function (req, res) {
+        Test.update({ id: req.params.id }, 
+            {
+                CategoryName : req.body.CategoryName
+            })
+            .fetch()
+            .then(data => {
+                res.status(200).json({
+                    statusCode : 200,
+                    data : data,
+                 })
         })
     },
 
+    
+
     //after edit the item also update in the database
-    update: function (req, res) {
+    itemupdate: function (req, res) {
         item.update({ id: req.params.id }, {
             itemName: req.body.itemName,
             description: req.body.description,
             price: req.body.price,
             displayOrder: req.body.displayOrder,
-        }).exec(function (err) {
-            if (err) {
-                res.send(500, { error: 'Database Error' })
-            }
+        })
+        .fetch()
+        .then(data =>  {
             res.status(200).json({
-                message: 'updated'
-            })
+                statusCode : 200,
+                message : 'updated',
+                data : data,
+             })
+        })
+        .catch(err => {
+            res.status(500).json({
+                statusCode : 500,
+                error : err,
+             })
         })
     },
 
     //searching operation perform in the category side
     search: async function (req, res) {
-        let result = await Test.findOne({ CategoryName: req.body.CategoryName })
+        let result = await Test.find({ CategoryName: req.body.CategoryName })
         if (!result) {
             res.send(500, { error: "not found" })
         }
@@ -177,6 +228,7 @@ module.exports = {
                 if (user.length < 1) {
                     console.log("len<1");
                     return res.status(200).json({
+                        statusCode : 500,
                         message: 'Auth Failed'
                     })
             
@@ -188,6 +240,7 @@ module.exports = {
                     if (err) {
                         console.log("errr");
                         return res.status(500).json({
+                            statusCode : 500,
                             message: 'Auth Failed'
                         })
                     }
@@ -205,6 +258,7 @@ module.exports = {
 
                         res.cookie('token',token,{httpOnly:true})
                         return res.status(200).json({
+                            statusCode : 200,
                             message: 'Auth Success',
                             token: token,
                         })
@@ -212,6 +266,7 @@ module.exports = {
                     else {
                         console.log("else");
                         return res.status(500).json({
+                            statusCode : 500,
                             message: 'Auth Failed'
                         })
                     }
@@ -227,7 +282,8 @@ module.exports = {
         try{
             res.clearCookie('token')
             res.status(200).json({
-                message : "cookie clear"
+                statusCode  :200,
+                message : "logout"
             })
         }
         catch(error){

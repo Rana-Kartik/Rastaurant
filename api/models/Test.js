@@ -14,7 +14,7 @@ module.exports = {
     CategoryName: {
       type: 'string'
     },
-    categoryID: {
+    items: {
       collection: 'item',
       via: 'items',
     }
