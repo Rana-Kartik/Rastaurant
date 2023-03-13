@@ -61,6 +61,7 @@ module.exports = {
         })
     },
 
+    //delete the item in the database
     itemdelete: function (req, res) {
         item.destroy({ id: req.params.id }).exec(function (err) {
             if (err) {
@@ -73,11 +74,11 @@ module.exports = {
         })
     },
 
-    //item add in the database through category
+    //item add in the database through category 
     itemadd: async function (req, res) {
         let categoryId = req.params.id;
         console.log(categoryId);
-        const { name, description, price, image, displayOrder } = req.body;
+        const { displayOrder } = req.body;
         console.log(displayOrder)
         // checking if displayOrder id already exists in particular category
         let result = await item.find().where({ items: categoryId, displayOrder: displayOrder })
@@ -111,7 +112,7 @@ module.exports = {
         }
     },
 
-    // item shows in the views
+    // item shows in the views with pagination
     itemshows: async function (req, res) {
         let skip = req.query.skip
         console.log(skip);
@@ -182,7 +183,7 @@ module.exports = {
             })
     },
 
-    //edit the item 
+    //update the category 
     categoryupdate: function (req, res) {
         Test.update({ id: req.params.id },
             {
@@ -232,7 +233,7 @@ module.exports = {
             })
     },
 
-    //get the login credentials and varify from the database
+    //get the login credentials and varify from the database with jenerate the token
     login: async function (req, res) {
         console.log(req.body);
         await user.findOne({ username: req.body.username })
@@ -291,6 +292,8 @@ module.exports = {
                 })
             })
     },
+
+    //perform logout functionality with the help of cookies
     logout: async function (req, res) {
         try {
             res.clearCookie('token')
