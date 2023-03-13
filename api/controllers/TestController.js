@@ -13,21 +13,21 @@ module.exports = {
     //adding category in the database
     add: function (req, res) {
         Test.create({ CategoryName: req.body.CategoryName })
-        .fetch()
-        .then(data => {
-            res.status(200).json({
-               statusCode : 200,
-               data : data,
-               message: 'created'
+            .fetch()
+            .then(data => {
+                res.status(200).json({
+                    statusCode: 200,
+                    data: data,
+                    message: 'created'
+                })
             })
-        })
-        .catch(err => {
-            res.status(500).json({
-                statusCode : 500,
-                error : err,
-                message : 'error in creating the item'
-             })
-        })
+            .catch(err => {
+                res.status(500).json({
+                    statusCode: 500,
+                    error: err,
+                    message: 'error in creating the item'
+                })
+            })
     },
 
     //category show in the views
@@ -35,16 +35,16 @@ module.exports = {
         Test.find({})
             .then(data => {
                 res.status(200).json({
-                    statusCode : 200,
-                    data : data,
-                 })
+                    statusCode: 200,
+                    data: data,
+                })
             })
             .catch(err => {
                 res.status(500).json({
-                    statusCode : 500,
-                    error : err,
-                    message : 'error in creating the item'
-                 })
+                    statusCode: 500,
+                    error: err,
+                    message: 'error in creating the item'
+                })
             })
     },
 
@@ -55,9 +55,9 @@ module.exports = {
                 res.send(500, { error: 'Database Error' })
             }
             res.status(200).json({
-                statusCode : 200,
-                message : 'deleted'
-             })
+                statusCode: 200,
+                message: 'deleted'
+            })
         })
     },
 
@@ -67,34 +67,48 @@ module.exports = {
                 res.send(500, { error: 'Database Error' })
             }
             res.status(200).json({
-                statusCode : 200,
-                message : 'deleted'
-             })
+                statusCode: 200,
+                message: 'deleted'
+            })
         })
     },
 
     //item add in the database through category
     itemadd: async function (req, res) {
-        console.log(req.body);
-        await item.create({
-            itemName: req.body.itemName,
-            description: req.body.description,
-            price: req.body.price,
-            displayOrder: req.body.displayOrder,
-            items: req.body.items
-        }).fetch().then(result => {
-            res.status(200).json({
-                statusCode : 200,
-                data : result,
-                message : 'item created'
-             })
-        }).catch(err => {
-            res.status(500).json({
-                statusCode : 500,
-                error : err,
-                message : 'error in creating the item'
-             })
-        })
+        let categoryId = req.params.id;
+        console.log(categoryId);
+        const { name, description, price, image, displayOrder } = req.body;
+        console.log(displayOrder)
+        // checking if displayOrder id already exists in particular category
+        let result = await item.find().where({ items: categoryId, displayOrder: displayOrder })
+        console.log(result);
+        if (result.length > 0) {
+            return res.status(400).json({
+                status: 400,
+                err: 'display Order already existing'
+            })
+        }
+        else {
+            await item.create({
+                itemName: req.body.itemName,
+                description: req.body.description,
+                price: req.body.price,
+                displayOrder: req.body.displayOrder,
+                items: req.body.items
+            }).fetch().then(result => {
+                res.status(200).json({
+                    statusCode: 200,
+                    data: result,
+                    message: 'item created'
+                })
+            }).catch(err => {
+                res.status(500).json({
+                    statusCode: 500,
+                    error: err,
+                    message: 'error in creating the item'
+                })
+            })
+        }
     },
 
     // item shows in the views
@@ -104,12 +118,12 @@ module.exports = {
         let limit = req.query.limit
         console.log(limit);
 
-        if(skip && limit){
-            let result =  await item.find({}).limit(limit).skip(skip*limit)
+        if (skip && limit) {
+            let result = await item.find({}).limit(limit).skip(skip * limit)
             res.status(200).json({
-                statusCode : 200,
-                data : result,
-             })
+                statusCode: 200,
+                data: result,
+            })
         }
     },
 
@@ -117,9 +131,10 @@ module.exports = {
     itemshow: async function (req, res) {
         await Test.find({}).populate('items')
             .then(data => {
+                console.log(data);
                 res.status(200).json({
-                    statusCode : 200,
-                    data : data,
+                    statusCode: 200,
+                    data: data,
                 })
                 // console.log(data.pop().categoryID);
                 // const sta = data.pop();
@@ -153,14 +168,14 @@ module.exports = {
                                 username: req.body.username,
                                 password: hash
                             })
-                            .fetch()
-                            .then(result => {
-                                res.status(200).json({
-                                    statusCode : 200,
-                                    data : result,
-                                    message : 'User Created'
+                                .fetch()
+                                .then(result => {
+                                    res.status(200).json({
+                                        statusCode: 200,
+                                        data: result,
+                                        message: 'User Created'
+                                    })
                                 })
-                            })
                         }
                     })
                 }
@@ -169,17 +184,17 @@ module.exports = {
 
     //edit the item 
     categoryupdate: function (req, res) {
-        Test.update({ id: req.params.id }, 
+        Test.update({ id: req.params.id },
             {
-                CategoryName : req.body.CategoryName
+                CategoryName: req.body.CategoryName
             })
             .fetch()
             .then(data => {
                 res.status(200).json({
-                    statusCode : 200,
-                    data : data,
-                 })
-        })
+                    statusCode: 200,
+                    data: data,
+                })
+            })
     },
     //after edit the item also update in the database
     itemupdate: function (req, res) {
@@ -189,32 +204,32 @@ module.exports = {
             price: req.body.price,
             displayOrder: req.body.displayOrder,
         })
-        .fetch()
-        .then(data =>  {
-            res.status(200).json({
-                statusCode : 200,
-                message : 'updated',
-                data : data,
-             })
-        })
-        .catch(err => {
-            res.status(500).json({
-                statusCode : 500,
-                error : err,
-             })
-        })
+            .fetch()
+            .then(data => {
+                res.status(200).json({
+                    statusCode: 200,
+                    message: 'updated',
+                    data: data,
+                })
+            })
+            .catch(err => {
+                res.status(500).json({
+                    statusCode: 500,
+                    error: err,
+                })
+            })
     },
 
 
     //searching operation perform in the category side
     search: async function (req, res) {
-         await item.find({ itemName: req.body.itemName })
-         .then(result => {
-            res.status(200).json({
-                statusCode : 200,
-                data : result
+        await item.find({ itemName: req.body.itemName })
+            .then(result => {
+                res.status(200).json({
+                    statusCode: 200,
+                    data: result
+                })
             })
-         })
     },
 
     //get the login credentials and varify from the database
@@ -222,23 +237,23 @@ module.exports = {
         console.log(req.body);
         await user.findOne({ username: req.body.username })
             .then(async user => {
-                console.log("uuu",user);
+                console.log("uuu", user);
                 if (user.length < 1) {
                     console.log("len<1");
                     return res.status(200).json({
-                        statusCode : 500,
+                        statusCode: 500,
                         message: 'Auth Failed'
                     })
-            
-                } 
+
+                }
                 console.log("==============================");
-                const pass= req.body.password;
-                console.log("ghhuhj",req.body.password, user.password);
+                const pass = req.body.password;
+                console.log("ghhuhj", req.body.password, user.password);
                 await bcrypt.compare(pass, user.password, (err, result) => {
                     if (err) {
                         console.log("errr");
                         return res.status(500).json({
-                            statusCode : 500,
+                            statusCode: 500,
                             message: 'Auth Failed'
                         })
                     }
@@ -252,11 +267,11 @@ module.exports = {
                                 expiresIn: "80h"
                             },
                         )
-                        console.log(token,"===================");
+                        console.log(token, "===================");
 
-                        res.cookie('token',token,{httpOnly:true}).send()
+                        res.cookie('token', token, { httpOnly: true }).send()
                         return res.status(200).json({
-                            statusCode : 200,
+                            statusCode: 200,
                             message: 'Auth Success',
                             token: token,
                         })
@@ -264,7 +279,7 @@ module.exports = {
                     else {
                         console.log("else");
                         return res.status(500).json({
-                            statusCode : 500,
+                            statusCode: 500,
                             message: 'Auth Failed'
                         })
                     }
@@ -276,19 +291,19 @@ module.exports = {
                 })
             })
     },
-    logout :async function(req,res){
-        try{
+    logout: async function (req, res) {
+        try {
             res.clearCookie('token')
             res.status(200).json({
-                statusCode  :200,
-                message : "logout"
+                statusCode: 200,
+                message: "logout"
             })
         }
-        catch(error){
+        catch (error) {
             res.status(500).json({
-                error : error
+                error: error
             })
         }
-    } 
+    }
 };
 

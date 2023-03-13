@@ -7,7 +7,7 @@ module.exports = (req,res,proceed) => {
         if(!token){
             return res.status(500).json({
                 statuscode : 500,
-                message : 'Generate the token'
+                message : 'you can Login'
             })
         }
         else
